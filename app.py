@@ -1,4 +1,5 @@
 # passport_photo_app.py
+init_db()
 from flask import Flask, render_template_string, request, redirect, url_for, session, send_file
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -211,6 +212,10 @@ def admin():
         html += f"<tr><td>{user[0]}</td><td>{user[1]}</td><td>{user[2]}</td><td>{user[3]}</td></tr>"
     html += "</table><p><a href='/'>← Back to Home</a></p>"
     return html
+    if __name__ == "__main__":
+    init_db()
+    app.run(host="0.0.0.0", port=10000)
+
 
 if __name__ == '__main__':
     init_db()
