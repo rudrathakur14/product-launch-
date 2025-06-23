@@ -3,6 +3,7 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from PIL import Image
+from rembg import remove
 import sqlite3, os, traceback
 
 app = Flask(__name__)
@@ -62,7 +63,47 @@ def init_db():
 if not os.path.exists("users.db"):
     init_db()
 
-STYLE = """<link rel="preconnect"... [style block unchanged for brevity] ...</style>"""
+STYLE = """
+<style>
+  * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+  body { margin: 0; background: #f0f4f8; color: #2d3436; padding: 20px; }
+  h1 { text-align: center; margin: 20px 0 30px; font-size: 2rem; }
+  .box {
+    background: #ffffff;
+    max-width: 480px;
+    margin: 0 auto 30px;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    text-align: center;
+  }
+  form { margin-top: 10px; }
+  input[type="file"], input[type="email"], input[type="password"], input[name="username"], button {
+    width: 100%; padding: 12px 14px; font-size: 1rem; margin: 10px 0;
+    border-radius: 8px; border: 1px solid #ccc;
+  }
+  button {
+    background: #0077ff; color: white; border: none;
+    font-weight: 600; cursor: pointer; transition: background 0.3s ease;
+  }
+  button:hover { background: #005fd1; }
+  a { color: #0077ff; text-decoration: none; }
+  img {
+    width: 100%; max-width: 400px; margin-top: 20px;
+    border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .footer {
+    text-align: center; font-size: 0.9em;
+    margin-top: 40px; color: #a4a4a4;
+  }
+  @media (max-width: 480px) {
+    h1 { font-size: 1.5rem; }
+    .box { padding: 18px; }
+    button { font-size: 0.95rem; }
+    img { max-width: 100%; }
+  }
+</style>
+"""
 
 HOME_HTML = STYLE + """
 <h1>🪪 Passport Photo Generator</h1>
@@ -76,7 +117,7 @@ HOME_HTML = STYLE + """
     {% if uploaded %}
       <p>Your uploaded image:</p>
       <img src="{{ uploaded_url }}" alt="Uploaded Image">
-      <p>Passport Size Photo:</p>
+      <p>Passport Size Photo (600x600, background removed):</p>
       <img src="{{ processed_url }}" alt="Passport Photo">
       <a href="{{ processed_url }}" download><button>Download Passport Photo</button></a>
     {% endif %}
@@ -90,9 +131,7 @@ HOME_HTML = STYLE + """
     <p><a href='/login'>Login</a> or <a href='/register'>Register</a> to get started!</p>
   </div>
 {% endif %}
-<div class="footer">
-  Contact: <a href="mailto:anvehsingh0612@gmail.com">anvehsingh0612@gmail.com</a>
-</div>
+<div class="footer">Contact: <a href="mailto:anvehsingh0612@gmail.com">anvehsingh0612@gmail.com</a></div>
 """
 
 REGISTER_HTML = STYLE + """
@@ -175,20 +214,6 @@ def upload():
         processed_path = os.path.join(PROCESSED_FOLDER, processed_filename)
 
         with Image.open(img_path) as im:
-            im = im.convert("RGB")
-            im = im.resize((600, 600))
-            im.save(processed_path, "JPEG")
-
-        session['uploaded'] = True
-        session['uploaded_file'] = filename
-        session['processed_file'] = processed_filename
-
-        return redirect('/')
-
-    except Exception as e:
-        print("Upload error:", e)
-        traceback.print_exc()
-        return "Internal Server Error", 500
-
-if __name__ == "__main__":
-    app.run(debug=True)
+            im = im.convert("RGBA")
+            bg_removed = remove(im)
+            resized = bg_removed.resize
