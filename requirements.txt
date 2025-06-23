@@ -4,4 +4,4 @@ werkzeug
 pillow
 rembg
 gunicorn
-
+onnxruntime
