@@ -2,4 +2,5 @@ Flask
 Flask-Login
 Werkzeug
 Pillow
+rembg
 gunicorn
