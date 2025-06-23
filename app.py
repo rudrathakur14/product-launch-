@@ -171,7 +171,8 @@ def home():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        name, email = request.form['username'], request.form['email']
+        name = request.form['username']
+        email = request.form['email']
         pwd_hash = generate_password_hash(request.form['password'])
         try:
             conn = sqlite3.connect("users.db")
@@ -218,4 +219,6 @@ def upload():
             bg_removed = remove(im)
             resized = bg_removed.resize((600, 600))
             final_image = Image.new("RGB", resized.size, (255, 255, 255))
-            final
+            final_image.paste(resized, mask=resized.split()[3])
+            final_image.save(processed_path, "JPEG")
+
