@@ -223,5 +223,16 @@ def upload():
             final_image.save(processed_path, "JPEG")
 
         session['uploaded'] = True
-        session['uploaded
+        session['uploaded_file'] = filename
+        session['processed_file'] = processed_filename
+
+        return redirect('/')
+
+     except Exception as e:
+         print("upload error:", e)
+         traceback.print_exc()
+         return "Internal Server Error", 500
+
+
+
 
