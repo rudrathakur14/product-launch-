@@ -1,4 +1,3 @@
-# passport_photo_app.py
 from flask import Flask, render_template_string, request, redirect, url_for, session, send_file
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -61,6 +60,10 @@ def init_db():
     """)
     conn.commit()
     conn.close()
+
+# 🔁 Ensure DB is initialized on both local & Render
+if not os.path.exists("users.db"):
+    init_db()
 
 STYLE = """
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
@@ -209,6 +212,4 @@ def admin():
     return html
 
 if __name__ == '__main__':
-    init_db()
     app.run(host="0.0.0.0", port=10000, debug=True)
-
