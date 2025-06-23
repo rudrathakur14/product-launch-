@@ -216,4 +216,6 @@ def upload():
         with Image.open(img_path) as im:
             im = im.convert("RGBA")
             bg_removed = remove(im)
-            resized = bg_removed.resize
+            resized = bg_removed.resize((600, 600))
+            final_image = Image.new("RGB", resized.size, (255, 255, 255))
+            final
