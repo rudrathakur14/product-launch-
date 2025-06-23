@@ -1,5 +1,4 @@
 # passport_photo_app.py
-init_db()
 from flask import Flask, render_template_string, request, redirect, url_for, session, send_file
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -63,7 +62,6 @@ def init_db():
     conn.commit()
     conn.close()
 
-# Styles
 STYLE = """
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -78,7 +76,6 @@ STYLE = """
 </style>
 """
 
-# Templates
 HOME_HTML = STYLE + """
 <h1>🪪 Passport Photo Generator</h1>
 {% if current_user.is_authenticated %}
@@ -185,7 +182,6 @@ def upload():
     processed_filename = "passport_" + current_user.username + ".jpg"
     processed_path = os.path.join(PROCESSED_FOLDER, processed_filename)
 
-    # Resize to standard passport photo size (2x2 inches at 300 DPI = 600x600 pixels)
     with Image.open(img_path) as im:
         im = im.convert("RGB")
         im = im.resize((600, 600))
@@ -206,18 +202,13 @@ def admin():
     cur.execute("SELECT id, username, email, registered_on FROM users ORDER BY id DESC")
     users = cur.fetchall()
     conn.close()
-
     html = STYLE + "<h2>👥 Registered Users</h2><table><tr><th>ID</th><th>Username</th><th>Email</th><th>Registered</th></tr>"
     for user in users:
         html += f"<tr><td>{user[0]}</td><td>{user[1]}</td><td>{user[2]}</td><td>{user[3]}</td></tr>"
     html += "</table><p><a href='/'>← Back to Home</a></p>"
     return html
-    if __name__ == "__main__":
-    init_db()
-    app.run(host="0.0.0.0", port=10000)
-
 
 if __name__ == '__main__':
     init_db()
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=10000, debug=True)
 
