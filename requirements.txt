@@ -1,6 +1,7 @@
-Flask
-Flask-Login
-Werkzeug
-Pillow
-rembg
-gunicorn
+Flask==2.3.3
+Flask-Login==0.6.3
+Werkzeug==2.3.7
+Pillow==10.0.1
+gunicorn==21.2.0
+python-dotenv==1.0.0
+rembg==2.0.50
