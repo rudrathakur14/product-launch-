@@ -5,7 +5,6 @@ from werkzeug.utils import secure_filename
 from PIL import Image
 import sqlite3, os
 
-# Setup
 app = Flask(__name__)
 app.secret_key = "super-secret"
 UPLOAD_FOLDER = "static/uploads"
@@ -15,12 +14,10 @@ os.makedirs(PROCESSED_FOLDER, exist_ok=True)
 
 ADMIN_EMAIL = "anvehsingh0612@gmail.com"
 
-# Login manager
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
 
-# User model
 class User(UserMixin):
     def __init__(self, id, username, email, password_hash, registered_on=None):
         self.id = id
@@ -61,21 +58,80 @@ def init_db():
     conn.commit()
     conn.close()
 
-# 🔁 Ensure DB is initialized on both local & Render
 if not os.path.exists("users.db"):
     init_db()
 
 STYLE = """
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  body { font-family: 'Roboto', sans-serif; background: linear-gradient(to right, #74ebd5, #acb6e5); text-align: center; padding: 20px; color: #333; }
-  .box { background: #fff; padding: 30px; border-radius: 16px; max-width: 450px; margin: 40px auto; box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
-  input, button { padding: 12px; margin: 10px 0; width: 85%; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; }
-  button { background: #0984e3; color: white; border: none; cursor: pointer; transition: background 0.3s; }
-  button:hover { background: #74b9ff; }
-  .footer { margin-top: 40px; font-size: 0.9em; color: white; }
-  img { max-width: 90%; margin: 20px auto; border-radius: 12px; }
-  a { color: #2d3436; text-decoration: none; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #f9fbfd;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+    color: #2f3542;
+  }
+  h1, h2 { font-weight: 600; margin: 20px 0; }
+  .box {
+    background: #ffffff;
+    padding: 28px;
+    margin: 24px auto;
+    max-width: 460px;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  }
+  input, button {
+    width: 100%;
+    padding: 14px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    font-family: inherit;
+  }
+  input:focus, button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0,123,255,0.2);
+  }
+  button {
+    background-color: #1e90ff;
+    color: white;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.25s ease-in-out;
+  }
+  button:hover {
+    background-color: #339af0;
+  }
+  img {
+    max-width: 100%;
+    margin: 20px auto;
+    border-radius: 10px;
+  }
+  .footer {
+    font-size: 0.9em;
+    color: #a4b0be;
+    margin-top: 40px;
+  }
+  a {
+    color: #1e90ff;
+    text-decoration: none;
+  }
+  table {
+    margin: 0 auto;
+    border-collapse: collapse;
+    width: 100%;
+  }
+  table th, table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+  }
 </style>
 """
 
@@ -192,24 +248,4 @@ def upload():
 
     session['uploaded'] = True
     session['uploaded_file'] = filename
-    session['processed_file'] = processed_filename
-    return redirect('/')
-
-@app.route('/admin')
-@login_required
-def admin():
-    if current_user.email != ADMIN_EMAIL:
-        return "Access denied."
-    conn = sqlite3.connect("users.db")
-    cur = conn.cursor()
-    cur.execute("SELECT id, username, email, registered_on FROM users ORDER BY id DESC")
-    users = cur.fetchall()
-    conn.close()
-    html = STYLE + "<h2>👥 Registered Users</h2><table><tr><th>ID</th><th>Username</th><th>Email</th><th>Registered</th></tr>"
-    for user in users:
-        html += f"<tr><td>{user[0]}</td><td>{user[1]}</td><td>{user[2]}</td><td>{user[3]}</td></tr>"
-    html += "</table><p><a href='/'>← Back to Home</a></p>"
-    return html
-
-if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=10000, debug=True)
+    session['processed_file']
