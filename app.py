@@ -229,7 +229,7 @@ def upload():
         return redirect('/')
 
     except Exception as e:
-                session['uploaded'] = True
+        session['uploaded'] = True
         session['uploaded_file'] = filename
         session['processed_file'] = processed_filename
 
