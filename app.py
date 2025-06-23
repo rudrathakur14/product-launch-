@@ -6,6 +6,7 @@ from PIL import Image
 from rembg import remove
 import sqlite3, os, traceback
 
+# --- Flask App Config ---
 app = Flask(__name__)
 app.secret_key = "super-secret"
 
@@ -16,10 +17,12 @@ os.makedirs(PROCESSED_FOLDER, exist_ok=True)
 
 ADMIN_EMAIL = "anvehsingh0612@gmail.com"
 
+# --- Login Setup ---
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
 
+# --- User Model ---
 class User(UserMixin):
     def __init__(self, id, username, email, password_hash, registered_on=None):
         self.id = id
@@ -45,6 +48,7 @@ def get_user_by_email(email):
     conn.close()
     return User(*row) if row else None
 
+# --- DB Init ---
 def init_db():
     conn = sqlite3.connect("users.db")
     cur = conn.cursor()
@@ -63,6 +67,7 @@ def init_db():
 if not os.path.exists("users.db"):
     init_db()
 
+# --- HTML Styles ---
 STYLE = """
 <style>
   * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
@@ -105,6 +110,7 @@ STYLE = """
 </style>
 """
 
+# --- HTML Pages ---
 HOME_HTML = STYLE + """
 <h1>🪪 Passport Photo Generator</h1>
 {% if current_user.is_authenticated %}
@@ -159,6 +165,7 @@ LOGIN_HTML = STYLE + """
 </div>
 """
 
+# --- Routes ---
 @app.route('/')
 def home():
     uploaded = session.pop('uploaded', False)
@@ -229,19 +236,11 @@ def upload():
         return redirect('/')
 
     except Exception as e:
-        session['uploaded'] = True
-        session['uploaded_file'] = filename
-        session['processed_file'] = processed_filename
-
-        return redirect('/')
-
-    except Exception as e:
         print("Upload error:", e)
         traceback.print_exc()
         return "Internal Server Error", 500
 
-
-
+# --- Run App ---
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
