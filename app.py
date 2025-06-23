@@ -222,3 +222,6 @@ def upload():
             final_image.paste(resized, mask=resized.split()[3])
             final_image.save(processed_path, "JPEG")
 
+        session['uploaded'] = True
+        session['uploaded
+
